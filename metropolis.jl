@@ -6,15 +6,12 @@ function metropolisstep!(g::GenericGraph; temp::Float64 = 1.0, h::Float64=0.0)
     n = sqrt(num_vertices(g))
     x , y = rand(1:n) , rand(1:n) # Generating the postion randomically
     pos = n*(x-1)+y # Converting (x,y) to the position on the Vertices Array
-    pos_spin = g.vertices[pos].attributes["spin"]
+    myspin = g.vertices[pos].attributes["spin"]
 
     # Calculating neighbors' spin sum
     mclose = sum([neighbor.attributes["spin"] for neighbor in out_neighbors(vertices(g)[pos],g)])
 
-    # Calculating the energy on this environment
-    energy_up = -mclose - h
-    energy_down = mclose + h
-    ΔE = (energy_up - energy_down)*(pos_spin) # energy necessary to flip the spin
+    ΔE = 2(h+mclose)*pos_spin # energy necessary to flip the spin
     if ΔE < 0
         pos_spin *= -1 # flip spin
     else 

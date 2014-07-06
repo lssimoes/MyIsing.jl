@@ -1,19 +1,13 @@
-# Step (RECURSIVE) fo Wolff's Algorith
+# Step (RECURSIVE) of Wolff's Algorith
 function wolffstep!(pos::Int, g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000)
     if temp == 0 error("The Temperature can't be ZERO!!") end
 
     pos_spin = g.vertices[pos].attributes["spin"]
 
     # Calculating neighbors' spin sum
-    spinclose = 0
-    for neighbor in out_neighbors(vertices(g)[pos],g)
-        spinclose += neighbor.attributes["spin"]
-    end
+    mclose = sum([neighbor.attributes["spin"] for neighbor in out_neighbors(vertices(g)[pos],g)])
 
-    # Calculating the energy on this environment
-    energy_up = -spinclose - h
-    energy_down = spinclose + h
-    ΔE = (energy_up - energy_down)*(g.vertices[pos].attributes["spin"]) # energy necessary to flip the spin
+    ΔE = 2(h+mclose)*pos_spin # energy necessary to flip the spin
     if (ΔE < 0)
         g.vertices[pos].attributes["spin"] *= -1 # flip spin
     else 
