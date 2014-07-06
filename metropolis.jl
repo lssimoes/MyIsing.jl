@@ -5,37 +5,29 @@ function metropolisstep!(g::GenericGraph; temp::Float64 = 1.0, h::Float64=0.0)
     # Inicializations
     n = sqrt(num_vertices(g))
     x , y = rand(1:n) , rand(1:n) # Generating the postion randomically
-    pos = n*(x-1)+y # Converting (x,y) to the position on the Vertices Array 
+    pos = n*(x-1)+y # Converting (x,y) to the position on the Vertices Array
+    pos_spin = g.vertices[pos].attributes["spin"]
 
     # Calculating neighbors' spin sum
-    spinclose = 0
-    for neighbor in out_neighbors(vertices(g)[pos],g)
-        spinclose += neighbor.attributes["spin"]
-    end
+    mclose = sum([neighbor.attributes["spin"] for neighbor in out_neighbors(vertices(g)[pos],g)])
 
     # Calculating the energy on this environment
-    energy_up = -spinclose - h
-    energy_down = spinclose + h
-    ΔE = (energy_up - energy_down)*(g.vertices[pos].attributes["spin"]) # energy necessary to flip the spin
-    if (ΔE < 0)
-        g.vertices[pos].attributes["spin"] *= -1 # flip spin
-        println("\nflipei")
+    energy_up = -mclose - h
+    energy_down = mclose + h
+    ΔE = (energy_up - energy_down)*(pos_spin) # energy necessary to flip the spin
+    if ΔE < 0
+        pos_spin *= -1 # flip spin
     else 
-    	print("entrei")
         # ELSE flip with Metropolis probability
-        prob_flip = (energy_up/energy_down)^(g.vertices[pos].attributes["spin"])
-        towersort = rand()
-        if towersort < prob_flip
-        	println(" e flipei!")
-            g.vertices[pos].attributes["spin"] *= -1
-        else
-        	println(" mas não fiplei..")
+        prob_flip = exp(-ΔE/temp)
+        if rand() < prob_flip
+            pos_spin *= -1 # flip spin
         end
     end
 end
 
 # Metropolis' Algorithm
-function metropolis!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000)
+function metropolis!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000, plot::Bool=true)
     xi = 1:maxit
     mi = Array(Float64, 0)
     
@@ -45,16 +37,18 @@ function metropolis!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::
     end
     
     println("Finished with magnetization $(mi[end])")
-    PyPlot.plot(xi, mi, "o", color="blue")
-    PyPlot.plot(xi, mi, "-", color="blue")
-    PyPlot.ylim(0,1.2) # nao existia
-
-    PyPlot.title("Metropolis on Ising for T=$temp")
-    PyPlot.xlabel("Number of Iterations")
-    PyPlot.ylabel("Magnetization")
-    
-    #PyPlot.savefig("Plots/Metropolis/metro_mag_$temp.png")
-    #PyPlot.close()
-    # plot(x=xi,y=mi, Geom.point, Geom.line) #Gadfly
+    if plot
+	    PyPlot.plot(xi, mi, "o", color="blue")
+	    PyPlot.plot(xi, mi, "-", color="blue")
+	    PyPlot.ylim(0,1.2) # nao existia
+	
+	    PyPlot.title("Metropolis on Ising for T=$temp")
+	    PyPlot.xlabel("Number of Iterations")
+	    PyPlot.ylabel("Magnetization")
+    	
+	    #PyPlot.savefig("Plots/Metropolis/metro_mag_$temp.png")
+	    #PyPlot.close()
+	    # plot(x=xi,y=mi, Geom.point, Geom.line) #Gadfly
+	end
     return mi[end]
 end

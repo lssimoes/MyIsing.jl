@@ -34,7 +34,7 @@ function wolffstep!(pos::Int, g::GenericGraph; temp::Float64=1.0, h::Float64=0.0
 end
 
 # Wolff's Algorithm
-function wolff!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000)
+function wolff!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000, plot::Bool=true)
     # Inicializations
     n = sqrt(num_vertices(g))
     x , y = rand(1:n) , rand(1:n) # Generating the postion randomically
@@ -43,16 +43,18 @@ function wolff!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=1
     wolffstep!(pos,g,temp=temp, h=h, maxit=maxit)
 
     println("Finished with magnetization $(mi[end])")
-    #PyPlot.plot(xi, mi, "o", color="blue")
-    PyPlot.plot(xi, mi, "-", color="blue")
-    PyPlot.ylim(0,1.2) # nao existia
-
-    PyPlot.title("Wolff on Ising for T=$temp")
-    PyPlot.xlabel("Number of Iterations")
-    PyPlot.ylabel("Magnetization")
+    if plot
+        #PyPlot.plot(xi, mi, "o", color="blue")
+        PyPlot.plot(xi, mi, "-", color="blue")
+        PyPlot.ylim(0,1.2) # nao existia
     
-    PyPlot.savefig("Plots/Wolff/wolff_mag_$temp.png")
-    PyPlot.close()
-    # plot(x=xi,y=mi, Geom.point, Geom.line) #Gadfly
+        PyPlot.title("Wolff on Ising for T=$temp")
+        PyPlot.xlabel("Number of Iterations")
+        PyPlot.ylabel("Magnetization")
+        
+        PyPlot.savefig("Plots/Wolff/wolff_mag_$temp.png")
+        PyPlot.close()
+        # plot(x=xi,y=mi, Geom.point, Geom.line) #Gadfly
+    end
     return mi[end]
 end

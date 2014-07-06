@@ -34,7 +34,7 @@ function heatbathstep!(g::GenericGraph; temp::Float64 = 1.0, h::Float64=0.0)
 end
 
 # HeatBath Algorithm for a Given Graph at a Given Temperature
-function heatbath!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000)
+function heatbath!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000, plot::Bool=true)
     xi = 1:maxit
     mi = Array(Float64, 0)
     
@@ -44,16 +44,17 @@ function heatbath!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::In
     end
     
     println("Finished with magnetization $(mi[end])")
-    #PyPlot.plot(xi, mi, "-", color="blue")
-    #PyPlot.ylim(0,1.2) # nao existia
-
-    #PyPlot.title("HeatBath on Ising for T=$temp")
-    #PyPlot.xlabel("Number of Iterations")
-    #PyPlot.ylabel("Magnetization")
-    
-    #PyPlot.savefig("Plots/HeatBath/hb_mag_$temp.png")
-    #PyPlot.close()
-    # plot(x=xi,y=mi, Geom.point, Geom.line) #Gadfly
+    if plot
+        PyPlot.plot(xi, mi, "-", color="blue")
+        PyPlot.ylim(0,1.2)
+        PyPlot.title("HeatBath on Ising for T=$temp")
+        PyPlot.xlabel("Number of Iterations")
+        PyPlot.ylabel("Magnetization")
+       
+        PyPlot.savefig("Plots/HeatBath/hb_mag_$temp.png")
+        PyPlot.close()
+        # plot(x=xi,y=mi, Geom.point, Geom.line) #Gadfly
+    end
     return mi[end]
 end
 
@@ -62,21 +63,21 @@ function heattemp(n::Int, temp::Float64; qtd::Int=10, h::Float64=0.0, maxit::Int
     mi = Array(Float64,0)
     for i in 1:qtd
         g = nsquaregraph(n)
-        push!(mi, heatbath!(g,temp=temp,h=h,maxit=maxit))
+        push!(mi, heatbath!(g,temp=temp,h=h,maxit=maxit, plot=false))
     end
     return sum(mi)/qtd
 end
 
 # HeatBath Algorithm for a set Graph at several Temperatures
 # TODO HeatBath Algorithm for many Graphs at several Temperatures
-function heatrange(n::Int; h::Float64=0.0, maxtemp::Float64=6.0, maxit::Int=10000 )
+function heatrange(n::Int; h::Float64=0.0, maxtemp::Float64=6.0, maxit::Int=10000)
     ti = 0.1:0.1:maxtemp
     mi = Array(Float64, 0)
     arr = spinmatrix(n)
     
     for temp in ti
         g = matrix2graph(arr)
-        push!(mi, heatbath!(g,temp=temp, h=h, maxit=maxit))
+        push!(mi, heatbath!(g,temp=temp, h=h, maxit=maxit, plot=false))
     end
 
     PyPlot.plot(ti,mi, "-", color="red")
