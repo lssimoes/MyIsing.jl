@@ -1,5 +1,5 @@
 # Step of the HeatBath Algorithm
-function heatbathstep!(g::GenericGraph; temp::Float64 = 1.0, h::Float64=0.0)
+function heatbathstep!(spinmatrix::Array{Int64,2}; temp::Float64 = 1.0, h::Float64=0.0)
     if temp == 0 error("The Temperature can't be ZERO!!") end
 
     # Inicializations
@@ -34,7 +34,7 @@ function heatbathstep!(g::GenericGraph; temp::Float64 = 1.0, h::Float64=0.0)
 end
 
 # HeatBath Algorithm for a Given Graph at a Given Temperature
-function heatbath!(g::GenericGraph; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000, plot::Bool=true)
+function heatbath!(spinmatrix::Array{Int64,2}; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000, plot::Bool=true)
     xi = 1:maxit
     mi = Array(Float64, 0)
     
