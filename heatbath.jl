@@ -14,8 +14,7 @@ function heatbathstep!(spinmatrix::Array{Int64,2}; temp::Float64 = 1.0, h::Float
 
     # Calculating the spin new "probabilities"
     prob_up = exp(-energy_up/temp)
-    prob_down = exp(-energy_down/temp)
-    normalization = prob_up + prob_down
+    normalization = prob_up + exp(-energy_down/temp)
 
     # Changing spin with the new probabilities
     spinmatrix[x,y] = rand()*normalization < prob_up ? 1 : -1
@@ -27,7 +26,7 @@ end
 # HeatBath Algorithm for a Given Graph at a Given Temperature
 function heatbath!(spinmatrix::Array{Int64,2}; temp::Float64=1.0, h::Float64=0.0, maxit::Int=20000, plot::Bool=true, verbose::Bool=true)
     xi = 1:maxit
-    mi = [Array(Float64, 0)]
+    mi = Array(Float64, 0)
     
     for iter in xi
         heatbathstep!(spinmatrix, temp=temp, h=h, verbose=false)
