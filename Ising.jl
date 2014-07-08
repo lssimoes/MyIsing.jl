@@ -13,7 +13,7 @@ export randspin,
        spinneighbors,
        heatbathstep!, 
        heatbath!,
-       heatrange,
+       heatrange
 
 
 include("heatbath.jl")

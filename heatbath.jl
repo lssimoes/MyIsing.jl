@@ -18,7 +18,7 @@ function heatbathstep!(spinmatrix::Array{Int64,2}; temp::Float64 = 1.0, h::Float
     normalization = prob_up + prob_down
 
     # Changing spin with the new probabilities
-    spinmatrix[i,j] = rand()*normalization < prob_up ? 1 : -1
+    spinmatrix[x,y] = rand()*normalization < prob_up ? 1 : -1
     if verbose 
         println("Changed spin ($(int(x)),$(int(y))) to $(spinmatrix[i,j])") 
     end
@@ -36,7 +36,7 @@ function heatbath!(spinmatrix::Array{Int64,2}; temp::Float64=1.0, h::Float64=0.0
     
     if verbose println("Finished with magnetization $(mi[end])") end
     if plot
-        PyPlot.plot(xi, mi, "-", color="blue")
+        PyPlot.plot(xi, mi, "o", color="blue")
         PyPlot.title("HeatBath on Ising for T=$temp")
         PyPlot.xlabel("Number of Iterations")
         PyPlot.ylabel("Magnetization")   
@@ -70,7 +70,7 @@ function heatrange(n::Int; maxtemp::Float64=6.0, qtd::Int=200, h::Float64=0.0, m
 
     PyPlot.plot(0.1:0.1:maxtemp, mα, "-", color="red")
     PyPlot.title("Magnetization over Temperatures with HeatBath")
-    PyPlot.savefig("Plots/HeatBath/heatbath_$(int(maxtemp))")
+    PyPlot.savefig("Plots/HeatBath/heatbath_$(n)grid_$(int(maxtemp))")
     PyPlot.close()
 
     return mα
