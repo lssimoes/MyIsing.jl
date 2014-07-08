@@ -3,15 +3,12 @@ function heatbathstep!(spinmatrix::Array{Int64,2}; temp::Float64 = 1.0, h::Float
     if temp == 0 error("The Temperature can't be ZERO!!") end
 
     # Inicializations
-    n = sqrt(num_vertices(g))
+    n = size(spinmatrix, 1)
     x , y = rand(1:n) , rand(1:n) # Generating the postion randomically
     pos = n*(x-1)+y # Converting (x,y) to the position on the Vertices Array
 
     # Calculating neighbors' spin sum
-    spinclose = 0
-    for neighbor in out_neighbors(vertices(g)[pos],g)
-        spinclose += neighbor.attributes["spin"]
-    end
+    spinclose = sum(spinneighbors(spinmatrix, x, y))
 
     # Calculating the energy on this environment
     energy_up = -spinclose - h
@@ -25,22 +22,22 @@ function heatbathstep!(spinmatrix::Array{Int64,2}; temp::Float64 = 1.0, h::Float
     # Changing spin with the new probabilities
     towersort = rand()*normalization
     if towersort < prob_up
-        g.vertices[pos].attributes["spin"] = 1
+        spinmatrix[i][j] = 1
         # println("Changed spin ($(int(x)),$(int(y))) to 1")
     else
-        g.vertices[pos].attributes["spin"] = -1
+        spinmatrix[i][j] = -1
         # println("Changed spin ($(int(x)),$(int(y))) to -1")
     end
 end
 
 # HeatBath Algorithm for a Given Graph at a Given Temperature
-function heatbath!(spinmatrix::Array{Int64,2}; temp::Float64=1.0, h::Float64=0.0, maxit::Int=10000, plot::Bool=true)
+function heatbath!(spinmatrix::Array{Int64,2}; temp::Float64=1.0, h::Float64=0.0, maxit::Int=20000, plot::Bool=true)
     xi = 1:maxit
     mi = Array(Float64, 0)
     
     for iter in xi
-        heatbathstep!(g, temp=temp,h=h)
-        push!(mi, abs(magnetization(g)))
+        heatbathstep!(spinmatrix, temp=temp,h=h)
+        push!(mi, abs(magnetization(spinmatrix)))
     end
     
     println("Finished with magnetization $(mi[end])")
@@ -59,28 +56,23 @@ function heatbath!(spinmatrix::Array{Int64,2}; temp::Float64=1.0, h::Float64=0.0
 end
 
 # HeatBath Algorithm for many Graphs at a Given Temperature
-function heattemp(n::Int, temp::Float64; qtd::Int=10, h::Float64=0.0, maxit::Int=50000)
+function heattemp(n::Int, temp::Float64; qtd::Int=100, h::Float64=0.0, maxit::Int=20000)
     mi = Array(Float64,0)
     for i in 1:qtd
-        g = nsquaregraph(n)
+        g = spingrid(n)
         push!(mi, heatbath!(g,temp=temp,h=h,maxit=maxit, plot=false))
     end
-    return sum(mi)/qtd
+    return sum(mi)/qtd # or just mean(mi) ? 
 end
 
-# HeatBath Algorithm for a set Graph at several Temperatures
-# TODO HeatBath Algorithm for many Graphs at several Temperatures
-function heatrange(n::Int; h::Float64=0.0, maxtemp::Float64=6.0, maxit::Int=10000)
-    ti = 0.1:0.1:maxtemp
-    mi = Array(Float64, 0)
-    arr = spinmatrix(n)
-    
-    for temp in ti
-        g = matrix2graph(arr)
-        push!(mi, heatbath!(g,temp=temp, h=h, maxit=maxit, plot=false))
+# HeatBath Algorithm for many Graphs at several Temperatures
+function heatrange(n::Int; maxtemp::Float64=6.0, qtd::Int=100, h::Float64=0.0, maxit::Int=20000)
+    mα = Array(Float64,0)
+    for i in 0.1:0.1:maxtemp
+       push!(mα,heattemp(n, i, qtd=qtd, h=h, maxit=maxit))
     end
 
-    PyPlot.plot(ti,mi, "-", color="red")
+    PyPlot.plot(0.1:0.1:maxtemp, mα, "-", color="red")
     PyPlot.title("Magnetization over Temperatures with HeatBath")
     PyPlot.savefig("Plots/heatbath_$(int(maxtemp))")
     PyPlot.close()
