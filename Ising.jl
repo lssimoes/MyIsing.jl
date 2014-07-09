@@ -4,7 +4,8 @@
 
 module Ising
 
-using PyPlot
+using PyPlot, DataFrames, Gadfly
+
 
 export randspin, 
        magnetization, 
@@ -15,7 +16,8 @@ export randspin,
        heatbath!,
        metropolis!,
        wolff!,
-       phasediag
+       phasediag,
+       plotcsv
 
 include("src/general.jl")
 include("src/plotting.jl")

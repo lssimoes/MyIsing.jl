@@ -49,15 +49,17 @@ function heatbath!(spinmatrix::Array{Int64,2};
         push!(mi, abs(magnetization(spinmatrix)))
     end
     
-    if verbose println("Finished with magnetization $(mi[end])") end
-    if plot
-        PyPlot.plot(xi, mi, "o", color="blue")
-        PyPlot.title("HeatBath on Ising for n=$(size(spinmatrix,1)) and T=$temp")
-        PyPlot.xlabel("Number of Iterations")
-        PyPlot.ylabel("Magnetization")   
-        PyPlot.ylim(0,1.1)
-        PyPlot.savefig("Plots/HeatBath/hb_n$(size(spinmatrix,1))_temp$temp.png")
-        PyPlot.close()
+    # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
+    df = DataFrame(Iterations=xi,Magnetization=mi)
+    pathcsv = "Data/Heatbath/heatbath_($gsize(spinmatrix,1))grid_$(temp)temp_$(maxit)iterations"
+    writetable(pathcsv, df)
+
+    if verbose 
+        println("Finished with magnetization $(mi[end])") 
+        println("Data saved to file: " * pathcsv)
+    end
+    if plot plotcsv(pathcsv) end
+
     end
 
     return mi[end]
