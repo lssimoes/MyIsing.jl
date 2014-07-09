@@ -17,7 +17,7 @@ function plotcsv(path::ASCIIString)
     
     titleplot = "$(names(df)[1]) over $(names(df)[2]) using $(method),\n $(label)"
 
-    plt = Gadfly.plot(df, x="$(names(df)[1])",y="$(names(df)[2])", Geom.point, Guide.xticks(ticks=[0:0.5:10.0]), Guide.title(titleplot))
+    plt = Gadfly.plot(df, x="$(names(df)[1])",y="$(names(df)[2])", Geom.point, Geom.line, Guide.xticks(ticks=[0:0.5:10.0]), Guide.title(titleplot))
     draw(PDF("Plots/$(method)/$(label).pdf",6inch,4inch),plt)
     draw(PNG("Plots/$(method)/$(label).png",6inch,4inch),plt)
     draw(SVGJS("Plots/$(method)/$(label).js.svg",6inch,4inch),plt)
@@ -38,7 +38,7 @@ end
 
 # Generic Algorithm that calculates a Function for many Graphs at several Temperature
 function phasediag(f::Function; 
-                   n::Int        = 10,
+                   n::Int           = 10,
                    ensembles::Int   = 200,
                    h::Float64       = 0.0,
                    mintemp::Float64 = 0.2,
