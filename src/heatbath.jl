@@ -51,7 +51,7 @@ function heatbath!(spinmatrix::Array{Int64,2};
     
     # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
     df = DataFrame(Iterations=xi,Magnetization=mi)
-    pathcsv = "Data/Heatbath/heatbath_($gsize(spinmatrix,1))grid_$(temp)temp_$(maxit)iterations"
+    pathcsv = "Data/Heatbath/heatbath_$(size(spinmatrix,1))grid_$(temp)temp_$(maxit)iterations"
     writetable(pathcsv, df)
 
     if verbose 
@@ -59,8 +59,6 @@ function heatbath!(spinmatrix::Array{Int64,2};
         println("Data saved to file: " * pathcsv)
     end
     if plot plotcsv(pathcsv) end
-
-    end
 
     return mi[end]
 end

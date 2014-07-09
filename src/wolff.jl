@@ -44,16 +44,16 @@ function wolff!(spinmatrix::Array{Int, 2};
         push!(mi, abs(magnetization(spinmatrix)))
     end
 
-    if verbose println("Finished with magnetization $(mi[end])") end
-    if plot
-        PyPlot.plot(xi, mi, "o", color="blue")
-        PyPlot.title("Wolff on Ising for n=$(size(spinmatrix,1)) and T=$temp")
-        PyPlot.xlabel("Number of Iterations")
-        PyPlot.ylabel("Magnetization")        
-        PyPlot.ylim(0,1.1)
-        PyPlot.savefig("Plots/Wolff/wolff_n$(size(spinmatrix,1))_temp$temp.png")
-        PyPlot.close()
+    # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
+    df = DataFrame(Iterations=xi,Magnetization=mi)
+    pathcsv = "Data/Wolff/wolff_$(size(spinmatrix,1))grid_$(temp)temp_$(maxit)iterations"
+    writetable(pathcsv, df)
+
+    if verbose 
+        println("Finished with magnetization $(mi[end])") 
+        println("Data saved to file: " * pathcsv)
     end
+    if plot plotcsv(pathcsv) end
 
     return mi[end]
 end

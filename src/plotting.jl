@@ -65,11 +65,11 @@ function phasediag(f::Function;
     df = DataFrame(Temperature=ti,Magnetization=mi)
     method = "$(uppercase("$f"[1]))"*"$f"[2:end-1]
 
-    pathcsv = "Data/$(method)/$(n)grid_$(ensembles)ensembles_$(maxit)iterations.csv"
+    pathcsv = "Data/$(method)/$(method)_$(n)grid_$(ensembles)ensembles_$(maxit)iterations.csv"
     writetable(pathcsv, df)
     println("Data saved to file: " * pathcsv)
 
-    if plot plotphase(pathcsv) end
+    if plot plotcsv(pathcsv) end
 
     return df
 end
