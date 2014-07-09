@@ -1,3 +1,9 @@
+##########################################
+#                                        #
+#   Metropolis Functions Implementation  #
+#                                        #
+##########################################
+
 # Step of Metropolis' Algorithm
 function metropolisstep!(spinmatrix::Array{Int64,2};
                          temp::Float64 = 1.0,
@@ -38,11 +44,11 @@ function metropolis!(spinmatrix::Array{Int64,2};
     if verbose println("Finished with magnetization $(mi[end])") end
     if plot
 	    PyPlot.plot(xi, mi, "o", color="blue")
-        PyPlot.title("Metropolis on Ising for T=$temp")
+        PyPlot.title("Metropolis on Ising for n=$(size(spinmatrix,1)) and T=$temp")
         PyPlot.xlabel("Number of Iterations")
         PyPlot.ylabel("Magnetization")      
 	    PyPlot.ylim(0,1.1)
-	    PyPlot.savefig("Plots/Metropolis/metro_mag_$temp.png")
+        PyPlot.savefig("Plots/Metropolis/metro_n$(size(spinmatrix,1))_temp$temp.png")
 	    PyPlot.close()
 	end
 

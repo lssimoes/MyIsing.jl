@@ -1,3 +1,9 @@
+##########################################
+#                                        #
+#   Wolff Functions Implementation       #
+#                                        #
+##########################################
+
 # Step (RECURSIVE) of Wolff's Algorith
 function wolffclusterstep!(spinmatrix::Array{Int, 2},
                     cluster::BitArray{2},
@@ -18,11 +24,11 @@ function wolffclusterstep!(spinmatrix::Array{Int, 2},
     end
 end
 
-# Wolff's Algorithm
+# Wolff's Algorithm for a Given Graph at a Given Temperature
 function wolff!(spinmatrix::Array{Int, 2};
                 temp::Float64 = 1.0,
                 h::Float64    = 0.0,
-                maxit::Int    = 1000,
+                maxit::Int    = 200,
                 plot::Bool    = true,
                 verbose::Bool = true)
 
@@ -36,17 +42,16 @@ function wolff!(spinmatrix::Array{Int, 2};
         wolffclusterstep!(spinmatrix, cluster, x, y, temp=temp, h=h)
         flip!(spinmatrix, cluster)
         push!(mi, abs(magnetization(spinmatrix)))
-        println("$(mi[end])")
     end
 
     if verbose println("Finished with magnetization $(mi[end])") end
     if plot
         PyPlot.plot(xi, mi, "o", color="blue")
-        PyPlot.title("Wolff on Ising for T=$temp")
+        PyPlot.title("Wolff on Ising for n=$(size(spinmatrix,1)) and T=$temp")
         PyPlot.xlabel("Number of Iterations")
         PyPlot.ylabel("Magnetization")        
         PyPlot.ylim(0,1.1)
-        PyPlot.savefig("Plots/Wolff/wolff_mag_$temp.png")
+        PyPlot.savefig("Plots/Wolff/wolff_n$(size(spinmatrix,1))_temp$temp.png")
         PyPlot.close()
     end
 
