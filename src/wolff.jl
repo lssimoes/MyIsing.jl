@@ -44,12 +44,12 @@ function wolff!(spinmatrix::Array{Int, 2};
         push!(mi, abs(magnetization(spinmatrix)))
     end
 
-    # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
-    df = DataFrame(Iterations=xi,Magnetization=mi)
-    pathcsv = "Data/Wolff/wolff_$(size(spinmatrix,1))grid_$(temp)temp_$(maxit)iterations"
-    writetable(pathcsv, df)
-
     if verbose 
+        # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
+        df = DataFrame(Iterations=xi,Magnetization=mi)
+        pathcsv = "Data/Wolff/wolff_$(size(spinmatrix,1))grid_$(temp)temp_$(maxit)iterations"
+        writetable(pathcsv, df)
+
         println("Finished with magnetization $(mi[end])") 
         println("Data saved to file: " * pathcsv)
     end

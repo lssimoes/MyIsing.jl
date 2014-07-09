@@ -2,9 +2,12 @@
 # github.com/kaslusimoes
 # MIT License
 
+require("DataFrames")
+require("Gadfly")
+
 module Ising
 
-using PyPlot, DataFrames, Gadfly
+using DataFrames, Gadfly
 
 
 export randspin, 

@@ -75,3 +75,22 @@ function graph2matrix(g::GenericGraph)
 
     return spinarray
 end
+
+function pygraphs()
+    # PyPlot
+    PyPlot.plot(ti, mi, "-", color="red")
+    PyPlot.title("Magnetization over Temperatures with " * "$f"[1:end-1])
+    PyPlot.xlabel("Temperature")
+    PyPlot.ylabel("Magnetization") 
+    PyPlot.ylim(0,1.1)
+    PyPlot.savefig("Plots/Phase/pyplot_" * "$f"[1:end-1] * "_$(n)grid_$(int(maxtemp))temp")
+    PyPlot.close()
+
+    PyPlot.plot(xi, mi, "o", color="blue")
+    PyPlot.title("HeatBath on Ising for n=$(size(spinmatrix,1)) and T=$temp")
+    PyPlot.xlabel("Number of Iterations")
+    PyPlot.ylabel("Magnetization")   
+    PyPlot.ylim(0,1.1)
+    PyPlot.savefig("Plots/HeatBath/hb_n$(size(spinmatrix,1))_temp$temp.png")
+    PyPlot.close()
+end
