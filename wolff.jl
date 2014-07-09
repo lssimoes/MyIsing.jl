@@ -1,27 +1,19 @@
 # Step (RECURSIVE) of Wolff's Algorith
-function wolffstep!(spinmatrix::Array{Int, 2},
+function wolffclusterstep!(spinmatrix::Array{Int, 2},
+                    cluster::BitArray{2},
                     i::Int, 
                     j::Int; 
                     temp::Float64 = 1.0, 
-                    h::Float64    = 0.0,
-                    maxit::Int   = 10000)
+                    h::Float64    = 0.0)
 
     if temp == 0 error("The Temperature can't be ZERO!!") end
 
-    # Calculating neighbors' spin sum
-    mclose = sum(spinneighbors(spinmatrix, i, j))
+    cluster[i,j] = true
+    myspin = spinmatrix[i,j]
 
-    ΔE = 2(h+mclose)*spinmatrix[i,j] # energy necessary to flip the spin
-    if ΔE < 0
-        flip!(spinmatrix, i, j) # flip spin certainly
-    elseif rand() < exp(-ΔE/temp)
-        flip!(spinmatrix, i, j) # flip spin with probability
-    end
-
-    # Recursive flip neighbor with same spin
-    for n in neighbors(spinmatrix, i, j)
-        if spinmatrix[n[1], n[2]] == spinmatrix[i,j]
-            wolffstep!(spinmatrix, n[1], n[2], temp=temp, h=h, maxit=maxit)
+    for (ni, nj) in neighbors(spinmatrix, i, j)
+        if cluster[ni,nj] == false && spinmatrix[ni,nj] == myspin #dunno if the order matters
+           if rand() < 1 - exp(-2/temp) wolffclusterstep!(spinmatrix, cluster, ni, nj, temp=temp, h=h) end
         end
     end
 end
@@ -30,18 +22,21 @@ end
 function wolff!(spinmatrix::Array{Int, 2};
                 temp::Float64 = 1.0,
                 h::Float64    = 0.0,
-                maxit::Int    = 5000,
+                maxit::Int    = 1000,
                 plot::Bool    = true,
                 verbose::Bool = true)
 
-    n = size(spinmatrix, 1)
-    x , y = rand(1:n) , rand(1:n) # Generating the postion randomically
+    # Generating the postion randomically
+    x , y = rand(1:size(spinmatrix, 1)) , rand(1:size(spinmatrix, 12))
+    cluster = falses(size(spinmatrix))
     mi = Array(Float64, 0)
     xi = 1:maxit
 
     for iter in xi
-        wolffstep!(spinmatrix, x, y, temp=temp, h=h, maxit=maxit)
+        wolffclusterstep!(spinmatrix, cluster, x, y, temp=temp, h=h)
+        flip!(spinmatrix, cluster)
         push!(mi, abs(magnetization(spinmatrix)))
+        println("$(mi[end])")
     end
 
     if verbose println("Finished with magnetization $(mi[end])") end

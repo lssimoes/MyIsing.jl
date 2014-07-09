@@ -10,6 +10,7 @@ export randspin,
        magnetization, 
        spingrid,
        flip!, 
+       neighbors,
        spinneighbors,
        heatbath!,
        metropolis!,
@@ -32,6 +33,13 @@ magnetization(spinmatrix::Array{Int,2})                  = abs(mean(spinmatrix))
 spingrid(n::Int)                                         = [randspin() for i in 1:n, j in 1:n]  # To generate a random spinmatrix
 flip!(spinmatrix::Array{Int, 2}, i::Int, j::Int)         = spinmatrix[i, j] *= -1               # To flip a given spin
 spinneighbors(spinmatrix::Array{Int, 2}, i::Int, j::Int) = [spinmatrix[i,j] for (i,j) in neighbors(spinmatrix, i, j)]
+
+function flip!(spinmatrix::Array{Int, 2}, cluster::BitArray{2})
+  for x in 1:size(cluster,1) for y in 1:size(cluster,2)
+    if cluster[x,y] flip!(spinmatrix,x,y) end
+  end end
+  cluster = falses(size(spinmatrix))
+end
 
 function neighbors(spinmatrix::Array{Int, 2}, i::Int, j::Int)
     n = Array((Int, Int), 0)
@@ -66,7 +74,7 @@ function phasediag(f::Function;
     if plot
         PyPlot.plot(it, mα, "-", color="red")
         PyPlot.title("Magnetization over Temperatures with " * "$f"[1:end-1])
-        PyPlot.savefig("Plots/" * "$f"[1:end-1] * "_$(size)grid_$(int(maxtemp))")
+        PyPlot.savefig("Plots/Phase/" * "$f"[1:end-1] * "_$(size)grid_$(int(maxtemp))")
         PyPlot.close()
     end
 
