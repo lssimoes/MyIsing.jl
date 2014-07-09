@@ -9,13 +9,13 @@ function wolffstep!(spinmatrix::Array{Int, 2},
     if temp == 0 error("The Temperature can't be ZERO!!") end
 
     # Calculating neighbors' spin sum
-    mclose = sum(spinneighbors(spinmatrix, x, y))
+    mclose = sum(spinneighbors(spinmatrix, i, j))
 
-    ΔE = 2(h+mclose)*spinmatrix[x,y] # energy necessary to flip the spin
+    ΔE = 2(h+mclose)*spinmatrix[i,j] # energy necessary to flip the spin
     if ΔE < 0
-        flip!(spinmatrix, x, y) # flip spin certainly
+        flip!(spinmatrix, i, j) # flip spin certainly
     elseif rand() < exp(-ΔE/temp)
-        flip!(spinmatrix, x, y) # flip spin with probability
+        flip!(spinmatrix, i, j) # flip spin with probability
     end
 
     # Recursive flip neighbor with same spin
@@ -40,7 +40,7 @@ function wolff!(spinmatrix::Array{Int, 2};
     xi = 1:maxit
 
     for iter in xi
-        wolffstep!(spinmatrix, i, j, temp=temp, h=h, maxit=maxit)
+        wolffstep!(spinmatrix, x, y, temp=temp, h=h, maxit=maxit)
         push!(mi, abs(magnetization(spinmatrix)))
     end
 
