@@ -12,12 +12,24 @@ spinneighbors(spinmatrix::Array{Int, 2}, i::Int, j::Int) = [spinmatrix[i,j] for 
 
 # Function that flips the sites (x,y) that are 'true' on 'cluster'
 function flip!(spinmatrix::Array{Int, 2}, cluster::BitArray{2})
-  for x in 1:size(cluster,1) for y in 1:size(cluster,2)
-    if cluster[x,y] 
-      flip!(spinmatrix,x,y) 
-      cluster[x,y] = false # Resetting the cluster for the next step
-    end
-  end end
+    for x in 1:size(cluster,1) for y in 1:size(cluster,2)
+        if cluster[x,y] flip!(spinmatrix,x,y) end
+    end end
+end
+
+# Function that clenas the cluster
+function cleancluster(cluster::BitArray{2})
+    for x in 1:size(cluster,1) for y in 1:size(cluster,2)
+        if cluster[x,y] cluster[x,y] = false end
+    end end
+end
+
+function clusterspin(spinmatrix::Array{Int, 2}, cluster::BitArray{2})
+    spin = 0
+    for x in 1:size(cluster,1) for y in 1:size(cluster,2)
+        if cluster[x,y] spin += spinmatrix[x,y] end
+    end end
+    return spin
 end
 
 # Function that evaluates some position neighbors and returns a list of their positions (tuple)

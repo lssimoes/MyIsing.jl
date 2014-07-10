@@ -7,12 +7,12 @@
 # Function that plots PyPlot and Gadfly given a path to a CSV
 function plotcsv(path::ASCIIString)
     df = readtable(path)
-    method, n, var, maxit = extract(path) # 'var' might be QtdEnsembles or Temperature
+    method, n, var, h, maxit = extract(path) # 'var' might be QtdEnsembles or Temperature
 
     if "$(names(df)[1])" == "Iterations" # then 'var' means Temperature
-        label = "size $(n) temp $(var) maxit $(maxit)" 
+        label = "size $(n) temp $(var) h_ext $(h) maxit $(maxit)" 
     else #if "$(names(df)[1])" == "Temperature" #then 'var' means QtdEnsembles
-        label = "size $(n) ensembles $(var) maxit $(maxit)" 
+        label = "size $(n) ensembles $(var) h_ext $(h) maxit $(maxit)" 
     end
     
     titleplot = "$(names(df)[1]) over $(names(df)[2]) using $(method),\n $(label)"
@@ -29,11 +29,12 @@ function extract(path::ASCIIString)
     pathargs = split(split(path, "/")[end], "_")
 
     method = "$(uppercase(pathargs[1][1]))$(pathargs[1][2:end])"
-    n = match(r".[0-9]", "$(pathargs[2])").match
+    n = match(r".*[0-9]", "$(pathargs[2])").match
     arg2 = match(r".*[0-9]", "$(pathargs[3])").match
-    maxit = match(r".*[0-9]", "$(pathargs[4])").match
+    h = match(r".*[0-9]", "$(pathargs[4])").match   
+    maxit = match(r".*[0-9]", "$(pathargs[5])").match
 
-    return method, n, arg2, maxit
+    return method, n, arg2, h, maxit
 end
 
 # Generic Algorithm that calculates a Function for many Graphs at several Temperature
@@ -65,7 +66,7 @@ function phasediag(f::Function;
     df = DataFrame(Temperature=ti,Magnetization=mi)
     method = "$(uppercase("$f"[1]))"*"$f"[2:end-1]
 
-    pathcsv = "Data/$(method)/$(method)_$(n)grid_$(ensembles)ensembles_$(maxit)iterations.csv"
+    pathcsv = "Data/$(method)/$(method)_$(n)grid_$(ensembles)ensembles_$(int(h))h_$(maxit)iterations.csv"
     writetable(pathcsv, df)
     println("Data saved to file: " * pathcsv)
 
