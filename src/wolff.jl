@@ -25,7 +25,7 @@ function wolffclusterstep!(spinmatrix::Array{Int, 2},
 end
 
 # Function that calculates the probabillity o fflipping the cluster given a external field h
-wolffflipprob(grid::Array{Int, 2}, clt::BitArray{2}, h::Float64) = (prob=-2h*clusterspin(grid, clt)) < 0 ? 1:prob
+wolffflipprob(grid::Array{Int, 2}, clt::BitArray{2}, h::Float64) = (prob=exp(-2h*clusterspin(grid, clt))) < 0 ? 1:prob
 
 # Wolff's Algorithm for a Given Graph at a Given Temperature
 function wolff!(spinmatrix::Array{Int, 2};
