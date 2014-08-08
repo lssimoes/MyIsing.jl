@@ -1,6 +1,6 @@
 # Created by Lucas Silva Simões
 # github.com/kaslusimoes
-# MIT License
+# MIT License described on Ising.jl
 
 require("DataFrames")
 require("Gadfly")
@@ -8,7 +8,6 @@ require("Gadfly")
 module Ising
 
 using DataFrames, Gadfly
-
 
 export randspin, 
        magnetization, 
@@ -28,4 +27,4 @@ include("src/heatbath.jl")
 include("src/metropolis.jl")
 include("src/wolff.jl")
 
-end
+end # END of module
