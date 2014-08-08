@@ -48,7 +48,7 @@ function phasediag(f::Function;
                    maxit::Int       = 50000,
                    plot::Bool       = true)
 
-    mi = Array(Float64,0)
+    mi = Float64[]
     ti =  mintemp:step:maxtemp
 
     # TO FIX: Since wolff converges quicklier, we might changes the values a little bit
@@ -83,7 +83,7 @@ function meanontemp(f::Function,
                     h::Float64     = 0.0,
                     maxit::Int     = 50000)
 
-    mi = Array(Float64,0)
+    mi = Float64[]
 
     for i in 1:qtd
         ensemble = spingrid(n)

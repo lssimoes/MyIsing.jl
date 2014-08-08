@@ -38,7 +38,7 @@ function wolff!(spinmatrix::Array{Int, 2};
     # Generating the postion randomically
     x , y = rand(1:size(spinmatrix, 1)) , rand(1:size(spinmatrix, 12))
     cluster = falses(size(spinmatrix))
-    mi = Array(Float64, 0)
+    mi = Float64[]
     xi = 1:maxit
 
     for iter in xi

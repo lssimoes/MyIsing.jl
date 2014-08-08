@@ -42,7 +42,7 @@ function heatbath!(spinmatrix::Array{Int64,2};
                    verbose::Bool  = true)
 
     xi = 1:maxit
-    mi = Array(Float64, 0)
+    mi = Float64[]
     
     for iter in xi
         heatbathstep!(spinmatrix, temp=temp, h=h, verbose=false)

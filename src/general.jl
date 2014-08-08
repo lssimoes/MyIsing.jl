@@ -34,7 +34,7 @@ end
 
 # Function that evaluates some position neighbors and returns a list of their positions (tuple)
 function neighbors(spinmatrix::Array{Int, 2}, i::Int, j::Int)
-    n = Array((Int, Int), 0)
+    n = (Int,Int)[] # same as Array((Int, Int), 0)
 
     if i > 1 push!(n, (i-1, j)) end
     if j > 1 push!(n, (i, j-1)) end
