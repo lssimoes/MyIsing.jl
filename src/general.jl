@@ -17,13 +17,14 @@ function flip!(spinmatrix::Array{Int, 2}, cluster::BitArray{2})
     end end
 end
 
-# Function that clenas the cluster
-function cleancluster(cluster::BitArray{2})
-    for y in 1:size(cluster,2) for x in 1:size(cluster,1) 
-        if cluster[x,y] cluster[x,y] = false end
-    end end
-end
+# Function that cleans the cluster
+# function cleancluster(cluster::BitArray{2})
+#     for y in 1:size(cluster,2) for x in 1:size(cluster,1) 
+#         if cluster[x,y] cluster[x,y] = false end
+#     end end
+# end
 
+# Function that returns the 'amount' of spin on a cluster
 function clusterspin(spinmatrix::Array{Int, 2}, cluster::BitArray{2})
     spin = 0
     for y in 1:size(cluster,2) for x in 1:size(cluster,1) 

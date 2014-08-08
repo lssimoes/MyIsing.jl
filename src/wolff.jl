@@ -13,12 +13,10 @@ function wolffclusterstep!(spinmatrix::Array{Int, 2},
                            h::Float64    = 0.0)
 
     if temp == 0 error("The Temperature can't be ZERO!!") end
-
     cluster[i,j] = true
-    myspin = spinmatrix[i,j]
 
     for (ni, nj) in neighbors(spinmatrix, i, j)
-        if cluster[ni,nj] == false && spinmatrix[ni,nj] == myspin #dunno if the order matters
+        if cluster[ni,nj] == false && spinmatrix[ni,nj] == spinmatrix[i,j] #dunno if the order matters
            if rand() < 1 - exp(-2/temp) wolffclusterstep!(spinmatrix, cluster, ni, nj, temp=temp, h=h) end
         end
     end
@@ -35,24 +33,25 @@ function wolff!(spinmatrix::Array{Int, 2};
                 plot::Bool    = true,
                 verbose::Bool = true)
 
-    # Generating the postion randomically
-    x , y = rand(1:size(spinmatrix, 1)) , rand(1:size(spinmatrix, 12))
-    cluster = falses(size(spinmatrix))
+    # Defined here because I need this variable inside 'verbose' clause
     mi = Float64[]
-    xi = 1:maxit
 
-    for iter in xi
+    for iter in 1:maxit
+        # Setting variables
+        x , y = rand(1:size(spinmatrix, 1)) , rand(1:size(spinmatrix, 12))
+        cluster = falses(size(spinmatrix))
+
+        # Calculating Wolff step
         wolffclusterstep!(spinmatrix, cluster, x, y, temp=temp, h=h)
         if h == 0.0 || rand() < wolffflipprob(spinmatrix, cluster, h) flip!(spinmatrix, cluster) end
 
-        cleancluster(cluster)
+        # Appending the result
         push!(mi, abs(magnetization(spinmatrix)))
-        x , y = rand(1:size(spinmatrix, 1)) , rand(1:size(spinmatrix, 12))
     end
 
     if verbose 
         # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
-        df = DataFrame(Iterations=xi,Magnetization=mi)
+        df = DataFrame(Iterations=1:maxit,Magnetization=mi)
         pathcsv = "Data/Wolff/wolff_$(size(spinmatrix,1))grid_$(temp)temp_$(int(h))h_$(maxit)iterations"
         writetable(pathcsv, df)
 
