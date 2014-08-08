@@ -13,9 +13,7 @@ function metropolisstep!(spinmatrix::Array{Int64,2};
 
     n = size(spinmatrix, 1)
     x , y = rand(1:n) , rand(1:n) # Generating the postion randomically
-
-    # Calculating neighbors' spin sum
-    mclose = sum(spinneighbors(spinmatrix, x, y))
+    mclose = sum(spinneighbors(spinmatrix, x, y)) # Calculating neighbors' spin sum
 
     ΔE = 2(h+mclose)*spinmatrix[x,y] # energy necessary to flip the spin
     if ΔE < 0
@@ -33,17 +31,16 @@ function metropolis!(spinmatrix::Array{Int64,2};
                      plot::Bool     = true,
                      verbose::Bool  = true)
 
-    xi = 1:maxit
     mi = Float64[]
     
-    for iter in xi
+    for iter in 1:maxit
         metropolisstep!(spinmatrix, temp=temp,h=h)
         push!(mi, abs(magnetization(spinmatrix)))
     end
     
     if verbose 
         # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
-        df = DataFrame(Iterations=xi,Magnetization=mi)
+        df = DataFrame(Iterations=1:maxit,Magnetization=mi)
         pathcsv = "Data/Metropolis/metropolis_$(size(spinmatrix,1))grid_$(temp)temp_$(int(h))h_$(maxit)iterations"
         writetable(pathcsv, df)
 

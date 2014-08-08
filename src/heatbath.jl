@@ -41,17 +41,16 @@ function heatbath!(spinmatrix::Array{Int64,2};
                    plot::Bool     = true,
                    verbose::Bool  = true)
 
-    xi = 1:maxit
     mi = Float64[]
     
-    for iter in xi
+    for iter in 1:maxit
         heatbathstep!(spinmatrix, temp=temp, h=h, verbose=false)
         push!(mi, abs(magnetization(spinmatrix)))
     end
     
     if verbose 
         # Saving to a .csv that informs Method, Size, Temperature and QtdIterations
-        df = DataFrame(Iterations=xi,Magnetization=mi)
+        df = DataFrame(Iterations=1:maxit,Magnetization=mi)
         pathcsv = "Data/Heatbath/heatbath_$(size(spinmatrix,1))grid_$(temp)temp_$(int(h))h_$(maxit)iterations"
         writetable(pathcsv, df)
 
